@@ -2,8 +2,7 @@
 
 A tool to automatically create music videos where the cuts are synchronized to the music's beat. Upload an audio file and a collection of video clips, and the application will generate a dynamic, rhythmic video.
 
-*(Consider adding a screenshot or a short GIF of your Gradio interface here to showcase the project!)*
-`![Music Video Cutter Screenshot](screenshot.png)`
+![Music Video Cutter Screenshot](image.png)
 
 ---
 
