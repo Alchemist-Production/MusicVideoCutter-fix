@@ -232,7 +232,7 @@ def create_music_video(mp3_file : str, video_files : VideoList, beat_times : Bea
     final_video = final_video.with_audio(audio)
 
     # Stelle sicher, dass das finale Video nicht länger als die Audiospur ist.
-    final_video = final_video.subclipped(0, audio_duration)
+    final_video = final_video.subclipped(0, min(final_video.duration, audio_duration))
 
     # Schreibe die finale Videodatei.
     final_video.write_videofile(
