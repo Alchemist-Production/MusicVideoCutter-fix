@@ -121,8 +121,8 @@ def create_ui() -> gr.Blocks:
                         maximum=16,
                         value=4,
                         step=1,
-                        label='Cut Intensity',
-                        info='Number of beats until next cut.'
+                        label='Pacing (Beats per Cut)',
+                        info='Controls cut frequency. Lower = Fast/Intense (every beat), Higher = Slow/Relaxed (every Nth beat).'
                     )
 
                     direction = gr.Radio(
