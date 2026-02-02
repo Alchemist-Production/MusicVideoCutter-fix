@@ -121,7 +121,7 @@ def create_ui() -> gr.Blocks:
                         maximum=16,
                         value=4,
                         step=1,
-                        label='Cut Intensity',
+                        label='Cut Interval (Beats)',
                         info='Number of beats until next cut.'
                     )
 
@@ -136,7 +136,7 @@ def create_ui() -> gr.Blocks:
                         choices=['Normal Speed', 'Half Speed', 'Double Speed'],
                         value='Normal Speed',
                         label='Video Playback Speed',
-                        info='Play all video clips at normal or half speed.'
+                        info='Play all video clips at normal, half, or double speed.'
                     )
 
                     with gr.Row():
@@ -160,7 +160,7 @@ def create_ui() -> gr.Blocks:
                         info='Base name for the generated video file. A timestamp will be added.'
                     )
 
-                process_btn = gr.Button('Create Music Video', variant='primary')
+                process_btn = gr.Button('🎵 Create Music Video 🎬', variant='primary')
 
             with gr.Column(scale=1):
                 gr.Markdown('### Output')
