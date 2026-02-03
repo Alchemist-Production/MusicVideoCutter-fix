@@ -14,7 +14,8 @@ VideoFilesInput : TypeAlias = Any
 StatusResult : TypeAlias = Tuple[str, str]
 
 
-def process_video(mp3_file : str, video_files : VideoFilesInput, cut_intensity : float, start_time : float, end_time : float, output_filename : str, direction : str, playback_speed_str: str) -> StatusResult:
+def process_video(mp3_file : str, video_files : VideoFilesInput, cut_intensity : float, start_time : float, end_time : float, output_filename : str, direction : str, playback_speed_str: str, progress=gr.Progress()) -> StatusResult:
+    progress(0, desc="Starting...")
     temp_dir = tempfile.mkdtemp()
 
     video_paths = []
@@ -28,7 +29,7 @@ def process_video(mp3_file : str, video_files : VideoFilesInput, cut_intensity :
 
     if len(video_paths) == 0:
         shutil.rmtree(temp_dir)
-        return None, 'Error: No valid video files uploaded'
+        raise gr.Error("No valid video files uploaded. Please select at least one MP4 file.")
 
     #create output folder
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -55,12 +56,14 @@ def process_video(mp3_file : str, video_files : VideoFilesInput, cut_intensity :
     if end_time > 0:
         end_time_value = end_time
         
+    progress(0.1, desc="Analyzing audio beats...")
     beat_times, _, _ = analyze_beats(
         mp3_file,
         start_time=start_time,
         end_time=end_time_value
     )
 
+    progress(0.3, desc="Processing video cuts...")
     result_path = create_music_video(
         mp3_file,
         video_paths,
@@ -73,6 +76,7 @@ def process_video(mp3_file : str, video_files : VideoFilesInput, cut_intensity :
         speed_factor=speed_factor
     )
 
+    progress(0.9, desc="Finalizing...")
     #move video to output
     shutil.move(result_path, output_path)
 
@@ -80,6 +84,7 @@ def process_video(mp3_file : str, video_files : VideoFilesInput, cut_intensity :
     beats_used = len(beat_times[::cut_intensity_int])
     status_msg = f"Successfully created video with {beats_used} cuts from {len(beat_times)} detected beats."
 
+    gr.Info(status_msg)
     shutil.rmtree(temp_dir)
 
     return output_path, status_msg
@@ -121,8 +126,8 @@ def create_ui() -> gr.Blocks:
                         maximum=16,
                         value=4,
                         step=1,
-                        label='Cut Intensity',
-                        info='Number of beats until next cut.'
+                        label='Cut Interval (Beats)',
+                        info='Cut every Nth beat. 1 = every beat, 4 = every 4th beat.'
                     )
 
                     direction = gr.Radio(
