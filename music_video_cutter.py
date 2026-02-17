@@ -171,6 +171,22 @@ def create_music_video(mp3_file : str, video_files : VideoList, beat_times : Bea
     videos_to_close = []
     target_size = None
 
+    # Cache loaded video clips to avoid re-opening files
+    loaded_videos = {}
+    for v_file in video_files:
+        if v_file not in loaded_videos:
+            try:
+                clip = VideoFileClip(v_file)
+                loaded_videos[v_file] = clip
+                videos_to_close.append(clip)
+            except Exception as e:
+                print(f"Warning: Could not load video {v_file}: {e}")
+
+    if not loaded_videos:
+        raise ValueError("No valid video files could be loaded.")
+
+    valid_video_files = [f for f in video_files if f in loaded_videos]
+
     # Iteriere durch die Beat-Paare, um die Dauer für jeden Clip zu bestimmen.
     for i in range(len(selected_beats) - 1):
         # Die Zieldauer des Clips im finalen Video (synchron zum Beat).
@@ -180,9 +196,8 @@ def create_music_video(mp3_file : str, video_files : VideoList, beat_times : Bea
         # Für halbe Geschwindigkeit (speed_factor=0.5) brauchen wir einen doppelt so langen Clip.
         required_source_duration = final_duration * speed_factor
 
-        video_file = random.choice(video_files)
-        video = VideoFileClip(video_file)
-        videos_to_close.append(video)
+        video_file = random.choice(valid_video_files)
+        video = loaded_videos[video_file]
 
         # Schneide einen zufälligen Ausschnitt aus dem Quellvideo in der benötigten Länge.
         if video.duration >= required_source_duration:
